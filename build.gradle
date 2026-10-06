@@ -1,0 +1,86 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.shakti'
+version = '0.1.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation libs.bundles.flink
+    implementation libs.h2
+    implementation libs.jackson.databind
+    runtimeOnly libs.log4j.slf4j2
+    runtimeOnly libs.log4j.core
+
+    testImplementation libs.flink.test.utils
+    testImplementation platform(libs.junit.bom)
+    testImplementation libs.junit.jupiter
+    testImplementation libs.assertj
+    testRuntimeOnly libs.junit.launcher
+}
+
+// Flink on JDK 17+/21 needs reflective access into JDK modules
+// (same list Flink ships in its distribution config, env.java.opts.all).
+def flinkJvmArgs = [
+    '--add-exports=java.base/sun.net.util=ALL-UNNAMED',
+    '--add-exports=java.rmi/sun.rmi.registry=ALL-UNNAMED',
+    '--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
+    '--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
+    '--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED',
+    '--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+    '--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+    '--add-exports=java.security.jgss/sun.security.krb5=ALL-UNNAMED',
+    '--add-opens=java.base/java.lang=ALL-UNNAMED',
+    '--add-opens=java.base/java.net=ALL-UNNAMED',
+    '--add-opens=java.base/java.io=ALL-UNNAMED',
+    '--add-opens=java.base/java.nio=ALL-UNNAMED',
+    '--add-opens=java.base/sun.nio.ch=ALL-UNNAMED',
+    '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED',
+    '--add-opens=java.base/java.text=ALL-UNNAMED',
+    '--add-opens=java.base/java.time=ALL-UNNAMED',
+    '--add-opens=java.base/java.util=ALL-UNNAMED',
+    '--add-opens=java.base/java.util.concurrent=ALL-UNNAMED',
+    '--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED',
+    '--add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED',
+]
+
+application {
+    mainClass = 'com.shakti.flinkdemo.App'
+    applicationDefaultJvmArgs = flinkJvmArgs
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-parameters']
+}
+
+tasks.named('run') {
+    // Run from the project dir so relative data paths resolve.
+    workingDir = projectDir
+    // Forward -Dflinkdemo.* options given to Gradle (e.g. -Dflinkdemo.h2.console=true) to the app JVM.
+    systemProperties System.getProperties().findAll { it.key.toString().startsWith('flinkdemo.') }
+    // Lets the app wait for Enter while the H2 console is open.
+    standardInput = System.in
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    jvmArgs flinkJvmArgs
+    workingDir = projectDir
+    maxHeapSize = '2g'
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        exceptionFormat = 'full'
+    }
+}

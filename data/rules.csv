@@ -1,0 +1,3 @@
+# rule_id,rule_type,rule_value
+R1,AMOUNT_OVER,500
+R2,MERCHANT_BLOCKED,casino
