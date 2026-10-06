@@ -1,0 +1,5 @@
+# user_id,full_name,email,country,interests
+U1,Alice Smith,alice@example.com,US,music;sports;tech
+U2,Bob Jones,bob@example.org,DE,tech
+U3,Carol White,carol@example.com,US,books;music
+U4,Dan Brown,dan@example.net,IN,sports;tech;travel;food

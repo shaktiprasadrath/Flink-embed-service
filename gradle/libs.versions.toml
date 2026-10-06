@@ -1,0 +1,43 @@
+[versions]
+# Flink 2.2.x: newest line with a matching flink-connector-jdbc release (4.1.0-2.2).
+flink = "2.2.1"
+flinkJdbc = "4.1.0-2.2"
+h2 = "2.3.232"
+jackson = "2.18.2"
+log4j = "2.24.3"
+junit = "5.11.4"
+assertj = "3.27.3"
+
+[libraries]
+flink-streaming-java = { module = "org.apache.flink:flink-streaming-java", version.ref = "flink" }
+flink-clients = { module = "org.apache.flink:flink-clients", version.ref = "flink" }
+flink-runtime-web = { module = "org.apache.flink:flink-runtime-web", version.ref = "flink" }
+flink-connector-files = { module = "org.apache.flink:flink-connector-files", version.ref = "flink" }
+flink-connector-datagen = { module = "org.apache.flink:flink-connector-datagen", version.ref = "flink" }
+flink-connector-base = { module = "org.apache.flink:flink-connector-base", version.ref = "flink" }
+flink-csv = { module = "org.apache.flink:flink-csv", version.ref = "flink" }
+flink-json = { module = "org.apache.flink:flink-json", version.ref = "flink" }
+flink-cep = { module = "org.apache.flink:flink-cep", version.ref = "flink" }
+flink-statebackend-rocksdb = { module = "org.apache.flink:flink-statebackend-rocksdb", version.ref = "flink" }
+flink-table-api-java-bridge = { module = "org.apache.flink:flink-table-api-java-bridge", version.ref = "flink" }
+flink-table-planner-loader = { module = "org.apache.flink:flink-table-planner-loader", version.ref = "flink" }
+flink-table-runtime = { module = "org.apache.flink:flink-table-runtime", version.ref = "flink" }
+flink-connector-jdbc-core = { module = "org.apache.flink:flink-connector-jdbc-core", version.ref = "flinkJdbc" }
+flink-test-utils = { module = "org.apache.flink:flink-test-utils", version.ref = "flink" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+h2 = { module = "com.h2database:h2", version.ref = "h2" }
+log4j-slf4j2 = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+
+[bundles]
+flink = [
+    "flink-streaming-java", "flink-clients", "flink-runtime-web",
+    "flink-connector-files", "flink-connector-base", "flink-connector-datagen", "flink-csv", "flink-json",
+    "flink-cep", "flink-statebackend-rocksdb",
+    "flink-table-api-java-bridge", "flink-table-planner-loader", "flink-table-runtime",
+    "flink-connector-jdbc-core",
+]

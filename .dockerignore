@@ -1,0 +1,10 @@
+.git
+.gradle
+.idea
+.vscode
+.remember
+build
+out
+k8s
+docs
+*.iml

@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - job.yaml
+  - explorer.yaml
+images:
+  # Local Docker Desktop build: keep as is.
+  # After pushing to Docker Hub: set newName to docker.io/<your-dockerhub-user>/flink-embed-service
+  - name: flink-embed-service
+    newName: flink-embed-service
+    newTag: "0.1.0"

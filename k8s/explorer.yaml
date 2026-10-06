@@ -1,0 +1,81 @@
+# Interactive run: executes the use cases, keeps the Flink Web UI up during UC-21 (5 minutes) and then
+# keeps the pod alive with the H2 console, so results can be queried. Access only via port-forward:
+#   kubectl -n flink-demo port-forward deploy/flink-demo-explorer 8081:8081 8082:8082
+# (port-forward to the Deployment, not the Service: the Service only routes to Ready pods, and the pod
+# becomes Ready after UC-21, when the Web UI is already gone)
+# The H2 console has no login. Do NOT expose this Service via NodePort, LoadBalancer or Ingress.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flink-demo-explorer
+  namespace: flink-demo
+  labels:
+    app: flink-embed-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flink-embed-service
+      mode: explorer
+  template:
+    metadata:
+      labels:
+        app: flink-embed-service
+        mode: explorer
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: app
+          image: flink-embed-service:0.1.0   # replaced by k8s/kustomization.yaml (images:)
+          imagePullPolicy: IfNotPresent
+          args: ["all"]
+          env:
+            - name: JAVA_OPTS
+              value: >-
+                -XX:MaxRAMPercentage=75
+                -Dflinkdemo.data.dir=/app/data
+                -Dflinkdemo.webui.seconds=300
+                -Dflinkdemo.webui.bind=0.0.0.0
+                -Dflinkdemo.keepalive=true
+                -Dflinkdemo.h2.allowOthers=true
+          ports:
+            - name: flink-ui
+              containerPort: 8081
+            - name: h2-console
+              containerPort: 8082
+          # Ready once all use cases have run and the H2 console is listening.
+          readinessProbe:
+            tcpSocket:
+              port: h2-console
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "1"
+              memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flink-demo-explorer
+  namespace: flink-demo
+spec:
+  type: ClusterIP
+  selector:
+    app: flink-embed-service
+    mode: explorer
+  ports:
+    - name: flink-ui
+      port: 8081
+      targetPort: flink-ui
+    - name: h2-console
+      port: 8082
+      targetPort: h2-console

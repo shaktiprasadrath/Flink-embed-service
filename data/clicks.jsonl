@@ -1,0 +1,12 @@
+{"user_id":"u1","page":"/home","ts":"2026-01-01 10:00:00"}
+{"user_id":"u1","page":"/products","ts":"2026-01-01 10:00:20"}
+{"user_id":"u2","page":"/home","ts":"2026-01-01 10:00:30"}
+{"user_id":"u1","page":"/cart","ts":"2026-01-01 10:00:50"}
+{"user_id":"u2","page":"/products","ts":"2026-01-01 10:01:10"}
+{"user_id":"u3","page":"/home","ts":"2026-01-01 10:01:15"}
+{"user_id":"u1","page":"/checkout","ts":"2026-01-01 10:01:30"}
+{"user_id":"u2","page":"/home","ts":"2026-01-01 10:02:40"}
+{"user_id":"u3","page":"/products","ts":"2026-01-01 10:03:00"}
+{"user_id":"u1","page":"/home","ts":"2026-01-01 10:06:00"}
+{"user_id":"u2","page":"/cart","ts":"2026-01-01 10:01:05"}
+{"user_id":"u3","page":"/cart","ts":"2026-01-01 10:06:30"}

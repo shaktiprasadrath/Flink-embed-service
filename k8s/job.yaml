@@ -1,0 +1,44 @@
+# Batch run: executes the use cases once, prints every result table to the pod log, then exits.
+# The app is a run-to-completion program, so it is a Job (a Deployment would restart it forever).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: flink-demo-run
+  namespace: flink-demo
+  labels:
+    app: flink-embed-service
+spec:
+  backoffLimit: 0                 # a failed use case is a result to look at, not something to retry
+  ttlSecondsAfterFinished: 3600   # keep the finished pod (and its log) for an hour
+  template:
+    metadata:
+      labels:
+        app: flink-embed-service
+        mode: job
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: app
+          image: flink-embed-service:0.1.0   # replaced by k8s/kustomization.yaml (images:)
+          imagePullPolicy: IfNotPresent
+          args: ["all"]                      # or e.g. ["uc01", "uc09", "uc13"]
+          env:
+            - name: JAVA_OPTS
+              value: >-
+                -XX:MaxRAMPercentage=75
+                -Dflinkdemo.data.dir=/app/data
+                -Dflinkdemo.webui.seconds=10
+          resources:
+            requests:
+              cpu: "1"
+              memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
